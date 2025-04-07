@@ -1,4 +1,3 @@
-# core/generator.py
 import random
 from core.task import BasicTask, ExtendedTask, Priority, TaskState
 from typing import List, Dict

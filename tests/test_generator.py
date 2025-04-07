@@ -1,5 +1,3 @@
-# tests/test_generator.py
-
 from core.generator import generate_task, generate_events
 from core.task import BasicTask, ExtendedTask, Priority
 
