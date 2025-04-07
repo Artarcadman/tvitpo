@@ -29,7 +29,7 @@ def main():
     cycle = 0
     while any(task.state != TaskState.SUSPENDED for task in tasks):
         cycle += 1
-        print(f"\n👉 Цикл {cycle}:")
+        print(f"\nЦикл {cycle}:")
         time.sleep(0.5)
 
         # Если нет активной задачи — запускаем следующую
@@ -50,7 +50,7 @@ def main():
         for event_name, waiting_tasks in events.items():
             still_waiting = [t for t in waiting_tasks if t.state == TaskState.WAITING]
             if still_waiting and event_name not in used_events:
-                print(f"👉 Подаем событие: {event_name}")
+                print(f"Подаем событие: {event_name}")
                 for task in still_waiting:
                     task.release()
                     scheduler.add_task(task)
@@ -60,11 +60,11 @@ def main():
         # Завершаем задачу, если она RUNNING
         if current and current.state == TaskState.RUNNING:
             scheduler.terminate_current()
-            print(f"✅ Завершена задача: {current.name}")
+            print(f"Завершена задача: {current.name}")
 
         time.sleep(0.3)
 
-    print("\n✅ Все задачи завершены. Симуляция окончена.")
+    print("\nВсе задачи завершены. Симуляция окончена.")
 
 
 if __name__ == "__main__":
