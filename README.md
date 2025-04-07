@@ -5,7 +5,7 @@ pip install -r requirements.txt
 pytest
 
 # 3. Проверка покрытия кода
-coverage run -m pytest
+coverage run -m pytest \
 coverage report
 
 # 4. Запуск основной программы
