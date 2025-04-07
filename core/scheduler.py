@@ -14,11 +14,14 @@ class Scheduler:
             self.ready_queues[task.priority].append(task)
             
     def get_next_task(self) -> Optional[Task]:
-        for priority in reversed(Priority):  # from HIGH to LOW
+        for priority in reversed(Priority):  # от HIGH к LOW
             queue = self.ready_queues[priority]
-            if queue:
-                return queue.pop(0)  # FIFO
+            while queue:
+                candidate = queue.pop(0)
+                if candidate.state == TaskState.READY:
+                    return candidate
         return None
+
     
     def run_next(self):
         if self.running_task:
@@ -30,7 +33,7 @@ class Scheduler:
             next_task.start()
             self.running_task = next_task
         else:
-            print("No ready tasks to start")
+            print("No tasks to start")
 
     def terminate_current(self):
         if self.running_task:
@@ -44,7 +47,7 @@ class Scheduler:
         if (self.running_task and 
             new_task.priority.value > self.running_task.priority.value):
             
-            print(f"Вытеснение: {self.running_task.name} -> {new_task.name}")
+            print(f"Preempt: {self.running_task.name} -> {new_task.name}")
             self.running_task.preempt()
             self.add_task(self.running_task)
             self.running_task = None

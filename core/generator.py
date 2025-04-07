@@ -1,30 +1,27 @@
-from core.task import BasicTask, ExtendedTask, Priority
-from core.scheduler import Scheduler
-from core.event_manager import EventManager
+# core/generator.py
+import random
+from core.task import BasicTask, ExtendedTask, Priority, TaskState
+from typing import List, Dict
 
-if __name__ == "__main__":
-    scheduler = Scheduler()
-    event_manager = EventManager()
+def generate_task(name_prefix: str, count: int) -> List:
+    tasks = []
+    for i in range(count):
+        name = f"{name_prefix}_{i}"
+        priority = random.choice(list(Priority))
+        task_type = random.choice([BasicTask, ExtendedTask])
+        task = task_type(name, priority)
+        task.activate()
+        tasks.append(task)
+    return tasks
 
-    t1 = BasicTask("LowTask", Priority.LOW)
-    t2 = BasicTask("HighTask", Priority.HIGH)
-    t3 = ExtendedTask("ExtTask", Priority.MEDIUM)
+def generate_events(tasks: List):
+    events = {}
+    for task in tasks:
+        if isinstance(task, ExtendedTask) and task.state == TaskState.READY:
+            task.start()  # Переводим в RUNNING
+            event_name = f"event_{random.randint(0, 2)}"
+            task.event = event_name  # <== вот это важно
+            task.wait(event_name)   # теперь событие задано
+            events.setdefault(event_name, []).append(task)
+    return events
 
-    t1.activate()
-    t2.activate()
-    t3.activate()
-
-    scheduler.preempt_if_needed(t1)
-    scheduler.preempt_if_needed(t2)
-    scheduler.preempt_if_needed(t3)
-
-    scheduler.run_next()  # должен запустить HighTask
-    scheduler.terminate_current()  # завершить HighTask
-
-    scheduler.run_next()  # запустит ExtTask
-    event_manager.wait_for_event(t3, "io_done")
-
-    scheduler.run_next()  # запустит LowTask
-
-    event_manager.fire_event("io_done")
-    scheduler.preempt_if_needed(t3)
